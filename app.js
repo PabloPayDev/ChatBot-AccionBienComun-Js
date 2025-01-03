@@ -1274,10 +1274,7 @@ async function getResumen(ctx){
             `✅ Foto/video: ${campos.convideo}.\n` +
             `✅ Fecha de solicitud: ${formatearFecha(campos.fecha)} \n` +
             `---------------\n` +
-            `Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución!`+
-            "\n\n"+
-            '1️⃣. Si, enviar solicitud\n'+
-            '0️⃣. No, nueva solicitud';
+            `Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución!`;
 
         return resumenToSend;
     } 
@@ -1300,60 +1297,7 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                 console.error('Error en el flujo:', error);
             }
         },
-    )
-    .addAnswer(
-        [""],
-        { capture: true, idle: 300000 },
-        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
-            try {
-                if (ctx?.idleFallBack) {
-                    return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                    });
-                }
-                const opcion = ctx.body;
-                switch (opcion) {
-                    case '1':
-                        return gotoFlow(flowResumenEnd);
-                    case '0':
-                        await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
-                        return gotoFlow(flowUbicacion);
-                    default:
-                        const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
-                        if (intentos > 2) {
-                            return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                            });
-                        } 
-                        else {
-                            await flowDynamic('Por favor selecciona una opción válida.');
-                            return fallBack();
-                        }
-                }
-            } 
-            catch (error) {
-                console.error(`Error: ${error.message}`);
-            }
-        }
     );
-
-const flowResumenEnd = addKeyword('GENER@REPORTE@741', { sensitive: true })
-    .addAnswer([
-        'Procesando...',
-    ]).
-    addAction(async (_, { flowDynamic }) => {
-        try {
-            await exportarExcel();
-            await flowDynamic([
-                {
-                    body: "REPORTE",
-                    media: 'http://35.232.232.3:4002/Solicitudes.xlsx',
-                    delay: 200
-                }
-            ])
-        } catch (error) {
-        }
-    });
 
 const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
     .addAnswer([
