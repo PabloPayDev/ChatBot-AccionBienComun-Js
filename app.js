@@ -208,7 +208,6 @@ const registroCantidadOpciones = async (numero, valor, idpreg) => {
     return total;
 }
 
-
 const obtenerCantidadesErroneas = async (numero, valor, idpreg) => {
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
@@ -377,11 +376,6 @@ const exportarExcel = async () => {
     } catch (error) {
     }
 };
-/*let intentos = 0;
-async function cantid---adSolicitudes() {
-    intentos++;
-    return intentos;
-}*/
 
 async function cantidadSolicitudes(numero, valor, idpreg) {
     console.log("Valores----", numero, valor, idpreg);
@@ -391,12 +385,6 @@ async function cantidadSolicitudes(numero, valor, idpreg) {
     console.log("Cantidad", idpreg, resultado.length);
     cantidadIntentos = resultado.length;
     return cantidadIntentos;
-}
-
-async function reiniciarContadorDespuesDeTiempo(tiempoEnMilisegundos) {
-    setInterval(() => {
-        intentos = 0;
-    }, tiempoEnMilisegundos);
 }
 
 const esStringValido = (mensaje) => {
@@ -1165,6 +1153,16 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '0':
                         const valo2 = await obtenerRegistro(ctx.from, ctx.body, 'SUBIOFOTO');
                         await flowDynamic('¡No hay problema! Agradecemos igual tu contribución.');
+                        try {
+                            let resumeToSend = await getResumen(ctx);
+                            await flowDynamic([{
+                                body: resumeToSend,
+                                delay: 200
+                            }]);
+                        } 
+                        catch (error) {
+                            console.error('Error en el flujo:', error);
+                        }
                         return gotoFlow(flowResumen);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
@@ -1199,15 +1197,22 @@ const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
                 }
 
                 await flowDynamic('Gracias');
+                try {
+                    let resumeToSend = await getResumen(ctx);
+                    await flowDynamic([{
+                        body: resumeToSend,
+                        delay: 200
+                    }]);
+                } 
+                catch (error) {
+                    console.error('Error en el flujo:', error);
+                }
                 return gotoFlow(flowResumen);
             } catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
     );
-
-const flowConfirmacionSolicitud = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer('Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución! Que tengas un excelente día. 😊 \n\n0️⃣. Regresar al Inicio.');
 
 async function getResumen(ctx){
     try {
@@ -1266,7 +1271,6 @@ async function getResumen(ctx){
         if (campos.rutadelmapa) {
             rutacompuesta = campos.rutadelmapa;
         }
-        const valor = await registrarSolicitudes(campos);
         let resumenToSend = `¡Gracias, continuación, te muestro un resumen de la informacion que enviaras:\n` +
             `✅ Nombre completo: ${campos.nombreCompleto} \n` +
             `✅ Dirección: ${campos.Ubicacion}.\n` +
@@ -1274,10 +1278,7 @@ async function getResumen(ctx){
             `✅ Foto/video: ${campos.convideo}.\n` +
             `✅ Fecha de solicitud: ${formatearFecha(campos.fecha)} \n` +
             `---------------\n` +
-            `Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución!`+
-            "\n\n"+
-            '1️⃣. Si, enviar solicitud\n'+
-            '0️⃣. No, nueva solicitud';
+            `Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución!`;
 
         return resumenToSend;
     } 
@@ -1287,22 +1288,11 @@ async function getResumen(ctx){
 }
 
 const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAction(
-        async (ctx, {flowDynamic}) => {
-            try {
-                let resumeToSend = await getResumen(ctx);
-                await flowDynamic([{
-                    body: resumeToSend,
-                    delay: 200
-                }]);
-            } 
-            catch (error) {
-                console.error('Error en el flujo:', error);
-            }
-        },
-    )
     .addAnswer(
-        [""],
+        [
+            '1️⃣. Si, enviar solicitud',
+            '0️⃣. No, nueva solicitud'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -1314,7 +1304,68 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                 const opcion = ctx.body;
                 switch (opcion) {
                     case '1':
-                        return gotoFlow(flowResumenEnd);
+                        try {
+                            const fechaActual = new Date();
+                            var campos = {};
+                            let valores = await obtenerResumen(ctx.from);
+                            valores = valores.reverse();
+                            for (let x = 0; x < valores.length; x++) {
+                                if((valores[x].tipoReg == 'CI')&&(!campos.ci)) {
+                                    campos.ci = valores[x].answer;
+                                }
+                                if((valores[x].tipoReg == 'EXPEDIDO')&&(!campos.expedido)) {
+                                    campos.expedido = valores[x].valor;
+                                }
+                                if((valores[x].nombreCompleto)&&(!campos.nombreCompleto)) {
+                                    campos.nombreCompleto = valores[x].nombreCompleto;
+                                }
+                                if((valores[x].tipoReg == 'PATERNO')&&(!campos.paterno)) {
+                                    campos.paterno = valores[x].answer;
+                                }
+                                if((valores[x].tipoReg == 'MATERNO')&&(!campos.materno)) {
+                                    campos.materno = valores[x].answer;
+                                }
+                                if((valores[x].tipoReg == 'NOMBRES')&&(!campos.nombres)) {
+                                    campos.nombres = valores[x].answer;
+                                }
+                                if((valores[x].tipoReg == 'UBICACIONDESC')&&(!campos.Ubicacion)) {
+                                    campos.Ubicacion = valores[x].answer;
+                                }
+                                if((valores[x].tipoReg == 'UBICACIONURL')&&(!campos.ubicacionurl)) {
+                                    if (valores[x].answer == '1') {
+                                        campos.ubicacionurl = 'SI';
+                                    }
+                                    if (valores[x].answer == '0') {
+                                        campos.ubicacionurl = 'NO';
+                                    }
+                                }
+                                if((valores[x].tipoReg == 'RUTAMAPA')&&(!campos.rutadelmapa)) {
+                                    campos.rutadelmapa = valores[x].rutadelmapa;
+                                }
+                                if((valores[x].tipoReg == 'SUBIOFOTO')&&(!campos.convideo)) {
+                                    if (valores[x].answer == '1') {
+                                        campos.convideo = 'SI';
+                                    }
+                                    if (valores[x].answer == '0') {
+                                        campos.convideo = 'NO';
+                                    }
+                                }
+                            }
+                            campos.numero = ctx.from.slice(3);
+                            if (!campos.nombreCompleto) {
+                                campos.nombreCompleto = campos.paterno + " " + campos.materno + " " + campos.nombres;
+                            }
+                            campos.fecha = fechaActual;
+                            var rutacompuesta = "";
+                            if (campos.rutadelmapa) {
+                                rutacompuesta = campos.rutadelmapa;
+                            }
+                            const valor = await registrarSolicitudes(campos);
+                        } 
+                        catch (error) {
+                            console.error('Error en el flujo:', error);
+                        }
+                        return endFlow({ body: 'Tu solicitud ha sido registrada, será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible.' });
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
                         return gotoFlow(flowUbicacion);
@@ -1390,7 +1441,6 @@ const main = async () => {
         flowFotos,
         flowAdjuntos,
         flowOtros,
-        flowConfirmacionSolicitud,
         flowSobrePrograma,
         flowBuscadorCIServicio,
         flowRegistro,
