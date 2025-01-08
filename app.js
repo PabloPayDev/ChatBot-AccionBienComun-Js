@@ -63,20 +63,6 @@ async function saludoInicial() {
     }
 }
 
-async function generarToken() {
-    try {
-        const response = await axios.post(process.env.URL_CUIDADANO + '/wsRC/apiLoginGamlp', {
-            user: "gamlpcatastro",
-            password: "c4t4str02021"
-        }, {
-            timeout: 90000
-        });
-        return response.data.token
-    }
-    catch (error){
-    }
-}
-
 async function consultarCI(numero, cedula) {
     try {
         const response = await axios.post(process.env.URL_CUIDADANO + '/wsRCIgob/ciudadano', {
@@ -288,54 +274,32 @@ const obtenerRegistroExpedido = async (numero, valor, tipo, valorexpedido) => {
     )
     return total;
 }
-const obtenerTotalSolicitudes = async (filtro = {}) => {
+const obtenerTotalSolicitudes = async () => {
     try {
-        const total = await historyModel.find({
-            answer: { $nin: ['GENER@REPORTE@741', 'Procesando...', '__call_action__', ' '] }
-        });
-        var datos = [];
-        var array = total;
-        var arreglo = "";
-        for (let x = 0; x < array.length; x++) {
-            try {
-                arreglo = JSON.stringify(array[x].options);
-                if (arreglo.length > 4) {
+        let total = await requestsModel.find({});
 
-                    datos.push({
-                        "tipo": "BOT",
-                        "numero": array[x].from,
-                        "mensaje": array[x].answer,
-                        "fecha": array[x].date,
-                    });
-                } else {
-                    datos.push({
-                        "tipo": "CLIENTE",
-                        "numero": array[x].from,
-                        "mensaje": array[x].answer,
-                        "fecha": array[x].date,
-                    });
-                }
-            } catch (error) {
-            }
-        }
-        return datos;
-    } catch (error) {
+        return total;
+    } 
+    catch (error) {
+        console.error("Error al obtener solicitudes:", error);
         return [];
     }
 };
 
 const exportarExcel = async () => {
     try {
-        const solicitudes = await obtenerTotalSolicitudes({
-            answer: { $nin: ['GENER@REPORTE@741', 'Procesando...', '__call_action__', ' '] }
-        });
+        const solicitudes = await obtenerTotalSolicitudes();
+
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Solicitudes');
         worksheet.columns = [
-            { header: 'Tipo', key: 'tipo', width: 20 },
-            { header: 'Numero de telefono', key: 'numero', width: 20 },
-            { header: 'Mensaje', key: 'mensaje', width: 50 },
-            { header: 'Fecha', key: 'fecha', width: 20 },
+            { header: 'Numero', key: 'row1', width: 20 },
+            { header: 'Nombre Completo', key: 'row2', width: 40 },
+            { header: 'Ubicacion', key: 'row3', width: 20 },
+            { header: 'CI', key: 'row4', width: 20 },
+            { header: 'Fecha', key: 'row5', width: 20 },
+            { header: 'Media', key: 'row6', width: 20 },
+            { header: 'Ruta del Mapa', key: 'row8', width: 40 },
         ];
         worksheet.getRow(1).font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
         worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
@@ -354,10 +318,13 @@ const exportarExcel = async () => {
         });
         solicitudes.forEach(solicitud => {
             worksheet.addRow({
-                tipo: solicitud.tipo,
-                numero: parseInt(solicitud.numero),
-                mensaje: solicitud.mensaje,
-                fecha: solicitud.fecha,
+                row1: solicitud.numero,
+                row2: solicitud.nombreCompleto,
+                row3: solicitud.Ubicacion,
+                row4: solicitud.ci,
+                row5: solicitud.fecha,
+                row6: solicitud.convideo,
+                row8: solicitud.rutadelmapa
             });
         });
         worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
@@ -372,8 +339,10 @@ const exportarExcel = async () => {
                 });
             }
         });
-        await workbook.xlsx.writeFile('public/Solicitudes.xlsx');
-    } catch (error) {
+        await workbook.xlsx.writeFile('public/SolicitudesSaved.xlsx');
+    } 
+    catch (error) {
+        console.log(error);
     }
 };
 
@@ -985,9 +954,10 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        '👍🏻¡Excelente elección! Por favor, escribe la acción de servicio que te gustaría proponer.'
-    ],
+    .addAnswer(
+        [
+            '👍🏻¡Excelente elección! Por favor, escribe la acción de servicio que te gustaría proponer.'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -1017,12 +987,13 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        '📍 Para ayudarnos a identificar el lugar exacto, ¿podrías compartirnos la ubicación del lugar?',
-        'Seleccione una opcion por favor:',
-        '1️⃣. Enviar ubicación del lugar.',
-        '0️⃣. No tengo la ubicación lugar.'
-    ],
+    .addAnswer(
+        [
+            '📍 Para ayudarnos a identificar el lugar exacto, ¿podrías compartirnos la ubicación del lugar?',
+            'Seleccione una opcion por favor:',
+            '1️⃣. Enviar ubicación del lugar.',
+            '0️⃣. No tengo la ubicación lugar.'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -1059,9 +1030,10 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: true })
-    .addAnswer([
-        'Por favor, Envie la ubicacion del lugar.'
-    ],
+    .addAnswer(
+        [
+            'Por favor, Envie la ubicacion del lugar.'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -1208,7 +1180,8 @@ const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
                     console.error('Error en el flujo:', error);
                 }
                 return gotoFlow(flowResumen);
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -1388,24 +1361,6 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
         }
     );
 
-const flowResumenEnd = addKeyword('GENER@REPORTE@741', { sensitive: true })
-    .addAnswer([
-        'Procesando...',
-    ]).
-    addAction(async (_, { flowDynamic }) => {
-        try {
-            await exportarExcel();
-            await flowDynamic([
-                {
-                    body: "REPORTE",
-                    media: 'http://35.232.232.3:4002/Solicitudes.xlsx',
-                    delay: 200
-                }
-            ])
-        } catch (error) {
-        }
-    });
-
 const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
     .addAnswer([
         'Procesando...',
@@ -1416,7 +1371,7 @@ const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
             await flowDynamic([
                 {
                     body: "REPORTE",
-                    media: 'http://35.232.232.3:4002/Solicitudes.xlsx',
+                    media: 'https://9191-186-121-235-58.ngrok-free.app/descargar-reporte',
                     delay: 200
                 }
             ]);
@@ -1429,7 +1384,19 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.get('/descargar-reporte', (req, res) => {
+    const filePath = path.join(__dirname, 'public', 'SolicitudesSaved.xlsx');
+    res.download(filePath, 'SolicitudesSaved.xlsx', (err) => {
+        if (err) {
+            console.error('Error al descargar el archivo:', err);
+            res.status(500).send('Hubo un problema al descargar el archivo.');
+        }
+    });
+});
 
 const main = async () => {
     const adapterFlow = createFlow([
@@ -1451,8 +1418,7 @@ const main = async () => {
         flowCorreo,
         flowMenuUbicacion,
         flowUbicacionGeoreferenciada,
-        flowResumen,
-        flowResumenEnd
+        flowResumen
     ]);
     const adapterProvider = createProvider(BaileysProvider);
     createBot(
