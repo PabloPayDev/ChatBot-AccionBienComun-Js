@@ -389,21 +389,6 @@ const esCorreoValido = (mensaje) => {
     }
 };
 
-const esStringValidoSinNumerico = (mensaje) => {
-    if (typeof mensaje !== 'string') {
-        return false;
-    }
-    const mensajeLimpio = mensaje.trim();
-    if (mensajeLimpio === '') {
-        return false;
-    }
-    const regexSoloNumeros = /^[0-9]+$/;
-    if (!regexSoloNumeros.test(mensajeLimpio)) {
-        return false;
-    }
-    return true;
-};
-
 const esCIValido = (valor) => {
     if (typeof valor !== 'string') {
         return false;
@@ -425,23 +410,26 @@ function formatearFecha(fecha) {
 }
 
 const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: true, idle: 30000 })
-    .addAction(async (ctx, { fallBack }) => {
-        try {
-            return fallBack();
-        } catch (error) {
-            console.error('Error en tiempoEsperado:', error);
+    .addAnswer(
+        [
+            " "
+        ],
+        { capture: true, idle: 300000 },
+        async (ctx, { gotoFlow }) => {
+            try {
+                const opcion = ctx.body;
+                switch (opcion) {
+                    case '100jueves':
+                        return gotoFlow(flowBuscadorCIServicio);
+                    default:
+                        return gotoFlow(tiempoEsperado);
+                }
+            } 
+            catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
         }
-    });
-
-async function procesarSolicitud(ctx, flowDynamic) {
-    try {
-        await flowDynamic([
-            { body: '✅ Si deseas cambiar a hacer una solicitud escribe: Salir100j' }
-        ]);
-    } catch (error) {
-        console.error('Error procesando la solicitud:', error);
-    }
-}
+    );
 
 const flowCero = addKeyword(EVENTS.WELCOME, { sensitive: true })
     .addAction(async (_, { flowDynamic }) => {
@@ -485,7 +473,7 @@ const flowCero = addKeyword(EVENTS.WELCOME, { sensitive: true })
             ' ',
         ],
         { capture: true, idle: 300000 },
-        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+        async (ctx, { gotoFlow, fallBack}) => {
             try {
                 const opcion = (ctx.body)?(ctx.body.trim()):('');
                 switch (opcion) {
