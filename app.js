@@ -1359,7 +1359,7 @@ const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
             await flowDynamic([
                 {
                     body: "REPORTE",
-                    media: 'https://9191-186-121-235-58.ngrok-free.app/descargar-reporte',
+                    media: process.env.APP_CURRENT_URL+'/descargar-reporte',
                     delay: 200
                 }
             ]);
