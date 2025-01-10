@@ -364,7 +364,7 @@ const esStringValido = (mensaje) => {
     if (mensajeLimpio === '') {
         return false;
     }
-    const regexInvalido = /[^a-zA-Z0-9 .,!?;:'"()\u00C0-\u017F]/u;
+    const regexInvalido = /[^a-zA-Z .,!?;:'"()\u00C0-\u017F]/u;
     if (regexInvalido.test(mensajeLimpio)) {
         return false;
     }
@@ -431,7 +431,7 @@ const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: tru
         }
     );
 
-const flowCero = addKeyword(EVENTS.WELCOME, { sensitive: true })
+const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
     .addAction(async (_, { flowDynamic }) => {
         try {
             const servicio = await saludoInicial();
@@ -462,50 +462,12 @@ const flowCero = addKeyword(EVENTS.WELCOME, { sensitive: true })
     })
     .addAnswer(
         [
-            '*¿En que puedo ayudarte hoy?*. 😊',
-            'Seleccione una opción:',
-            '1️⃣. Hacer una solicitud',
-            '2️⃣. Hacer seguimiento'
-        ],
-    )
-    .addAnswer(
-        [
-            ' ',
-        ],
-        { capture: true, idle: 300000 },
-        async (ctx, { gotoFlow, fallBack}) => {
-            try {
-                const opcion = (ctx.body)?(ctx.body.trim()):('');
-                switch (opcion) {
-                    case '1':
-                        return gotoFlow(inicio);
-                    case '2':
-                        //await procesarSolicitud(ctx, flowDynamic);
-                        return gotoFlow(tiempoEsperado);
-                    default:
-                        if (opcion == "Salir100j") {
-                            return gotoFlow(flowCero);
-                        } 
-                        else {
-                            return fallBack();
-                        }
-                }
-            } 
-            catch (error) {
-                console.error('Error en el flujo principal:', error);
-            }
-        }
-    );
-
-
-const inicio = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer(
-        [
             `Seleccione una opcion por favor:`,
             '1️⃣. Quiero saber más sobre el programa',
             '2️⃣. Quiero hacer una solicitud',
-            '3️⃣. Tengo otra consulta',
-            '4️⃣. Cancelar'
+            '3️⃣. Hacer seguimiento',
+            '4️⃣. Cancelar',
+            'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte!'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -521,7 +483,7 @@ const inicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                         await flowDynamic([
                             {
                                 body: 'El programa ‘100 Jueves de Acción por el Bien Común’ busca mejorar los espacios públicos a través de acciones como deshierbe, limpieza de aceras y cunetas. ¡Participa haciendo una solicitud!"',
-                                media: 'http://35.232.232.3:4002/jueves.mp4',
+                                media: 'https://lapaz.bo/videos/video-100-jueves.mp4',
                                 delay: 200
                             }
                         ])
@@ -529,7 +491,7 @@ const inicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '2':
                         return gotoFlow(flowBuscadorCIServicio);
                     case '3':
-                        return endFlow({ body: 'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte! \n0️⃣. Regresar al Inicio.' });
+                        return gotoFlow(tiempoEsperado);
                     case '4':
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
@@ -659,6 +621,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
+        `❌ No encontramos tu C.I. en nuestros registros.`,
         `Desea realizar el registro?`,
         'Seleccione una opcion por favor:',
         '1️⃣. Registrar ahora.',
@@ -773,7 +736,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n\n Nombres`
+        `Por favor, ingresa los siguientes datos para registrarte.\n Nombres`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -786,14 +749,16 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
                 if (esStringValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'NOMBRES');
                     return gotoFlow(flowApellidoPaterno);
-                } else {
+                } 
+                else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '7');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor, ingresa un nombre válido. Solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -805,7 +770,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n\n Apellido Paterno`
+        `Por favor, ingresa los siguientes datos para registrarte.\n Apellido Paterno`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -818,14 +783,16 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                 if (esStringValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'PATERNO');
                     return gotoFlow(flowApellidoMaterno);
-                } else {
+                } 
+                else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '8');
                     if (intentos > 2) {
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor, ingresa un apellido paterno válido. Solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -837,7 +804,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n\n Apellido Materno`
+        `Por favor, ingresa los siguientes datos para registrarte.\n Apellido Materno`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -850,14 +817,16 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                 if (esStringValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'MATERNO');
                     return gotoFlow(flowCorreo);
-                } else {
+                } 
+                else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '9');
                     if (intentos > 2) {
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor, ingresa un apellido materno válido. Solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -869,7 +838,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n\n Correo Electronico`
+        `Por favor, ingresa los siguientes datos para registrarte.\n Correo Electronico`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -925,13 +894,14 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
                     }
                 } 
                 else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '10');
                     if (intentos > 2) {
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor, ingresa un correo electrónico válido. Asegúrate de que tenga un formato correcto (por ejemplo, usuario@dominio.com).');
                         return fallBack();
                     }
                 }
@@ -957,7 +927,9 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
                 otros = ctx.body;
                 if (esStringValido(otros)) {
                     return gotoFlow(flowUbicacion);
-                } else {
+                } 
+                else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '12');
                     if (intentos > 2) {
                         return endFlow({
@@ -1001,6 +973,7 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                         await flowDynamic('¡No hay problema! Agradecemos igual tu contribución.');
                         return gotoFlow(flowFotos);
                     default:
+                        const opcion = ctx.body;
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '13');
                         if (intentos > 2) {
                             return endFlow({
@@ -1036,6 +1009,7 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                     return gotoFlow(flowFotos);
                 } 
                 else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '14');
                     if (intentos > 2) {
                         return endFlow({
@@ -1056,7 +1030,6 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
 const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer(
         [
-            "👍🏻¡Perfecto, nos encargamos de mantener las aceras limpias, cunetas limpias y deshierbes",
             '📍¿Dónde te gustaría que realizáramos esta acción? \nDescribe la dirección del lugar con la mayor precisión posible (Ej: Zona, calle/avenida, al lado de, frente a).'
         ],
         { capture: true, idle: 300000 },
@@ -1251,8 +1224,10 @@ async function getResumen(ctx){
 const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer(
         [
+            '¿Estas de acuerdo con esta informacion?',
             '1️⃣. Si, enviar solicitud',
-            '0️⃣. No, nueva solicitud'
+            '2️⃣. No, nueva solicitud',
+            '0️⃣. Cancelar y volver al inicio'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -1326,10 +1301,15 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                         catch (error) {
                             console.error('Error en el flujo:', error);
                         }
-                        return endFlow({ body: 'Tu solicitud ha sido registrada, será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible.' });
-                    case '0':
+                        return endFlow({ 
+                            body: 'Tu solicitud ha sido registrada, será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. \n0️⃣. Regresar al Inicio.'
+                        });
+                    case '2':
                         await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
                         return gotoFlow(flowUbicacion);
+                    case '0':
+                        await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
+                        return gotoFlow(inicio);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
@@ -1375,7 +1355,6 @@ app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.get('/descargar-reporte', (req, res) => {
     const filePath = path.join(__dirname, 'public', 'SolicitudesSaved.xlsx');
     res.download(filePath, 'SolicitudesSaved.xlsx', (err) => {
@@ -1385,10 +1364,19 @@ app.get('/descargar-reporte', (req, res) => {
         }
     });
 });
-
+/*
+app.get('/reporte-json', (req, res) => {
+    try {
+        const solicitudes = await obtenerTotalSolicitudes();
+        return solicitudes;
+    } 
+    catch (error) {
+        console.log(error);
+    }
+});
+*/
 const main = async () => {
     const adapterFlow = createFlow([
-        flowCero,
         inicio,
         flowReporte,
         tiempoEsperado,
