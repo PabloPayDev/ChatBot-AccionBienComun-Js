@@ -431,8 +431,10 @@ const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: tru
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow }) => {
             try {
-                const opcion = ctx.body;
+                const opcion = ((ctx.body).toLowerCase());
                 switch (opcion) {
+                    case 'salirahora':
+                        return gotoFlow(inicio);
                     case '100jueves':
                         return gotoFlow(flowBuscadorCIServicio);
                     default:
