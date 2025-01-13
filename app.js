@@ -1380,7 +1380,6 @@ app.get('/descargar-reporte', (req, res) => {
     });
 });
 /*
-AIzaSyD7qQgz12wRtCmomGDxUvSMmfE1qWe13vc
 =================
 const sheetId = 'TU_ID_DE_HOJA';  // ID de la hoja de cálculo (parte de la URL de Google Sheets)
 const apiKey = 'TU_CLAVE_DE_API'; // Clave de API de Google
