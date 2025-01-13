@@ -356,7 +356,7 @@ async function cantidadSolicitudes(numero, valor, idpreg) {
     return cantidadIntentos;
 }
 
-const esStringValido = (mensaje) => {
+const esStringAlfabeticoValido = (mensaje) => {
     if (typeof mensaje !== 'string') {
         return false;
     }
@@ -364,7 +364,21 @@ const esStringValido = (mensaje) => {
     if (mensajeLimpio === '') {
         return false;
     }
-    const regexInvalido = /[^a-zA-Z .,!?;:'"()\u00C0-\u017F]/u;
+    const regexInvalido = /[^a-zA-Z \u00C0-\u017F]/u;
+    if (regexInvalido.test(mensajeLimpio)) {
+        return false;
+    }
+    return true;
+};
+const esStringAlfanumericoValido = (mensaje) => {
+    if (typeof mensaje !== 'string') {
+        return false;
+    }
+    const mensajeLimpio = mensaje.trim();
+    if (mensajeLimpio === '') {
+        return false;
+    }
+    const regexInvalido = /[^a-zA-Z0-9 \u00C0-\u017F]/u;
     if (regexInvalido.test(mensajeLimpio)) {
         return false;
     }
@@ -746,7 +760,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
-                if (esStringValido(ctx.body)) {
+                if (esStringAlfabeticoValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'NOMBRES');
                     return gotoFlow(flowApellidoPaterno);
                 } 
@@ -780,7 +794,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
-                if (esStringValido(ctx.body)) {
+                if (esStringAlfabeticoValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'PATERNO');
                     return gotoFlow(flowApellidoMaterno);
                 } 
@@ -814,7 +828,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
-                if (esStringValido(ctx.body)) {
+                if (esStringAlfabeticoValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'MATERNO');
                     return gotoFlow(flowCorreo);
                 } 
@@ -925,7 +939,7 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
                     });
                 }
                 otros = ctx.body;
-                if (esStringValido(otros)) {
+                if (esStringAlfabeticoValido(otros)) {
                     return gotoFlow(flowUbicacion);
                 } 
                 else {
@@ -1040,11 +1054,12 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
-                if (esStringValido(ctx.body)) {
+                if (esStringAlfanumericoValido(ctx.body)) {
                     const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONDESC');
                     return gotoFlow(flowMenuUbicacion);
                 } 
                 else {
+                    const opcion = ctx.body;
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '15');
                     if (intentos > 2) {
                         return endFlow({
@@ -1365,15 +1380,54 @@ app.get('/descargar-reporte', (req, res) => {
     });
 });
 /*
-app.get('/reporte-json', (req, res) => {
-    try {
-        const solicitudes = await obtenerTotalSolicitudes();
-        return solicitudes;
-    } 
-    catch (error) {
-        console.log(error);
-    }
-});
+AIzaSyD7qQgz12wRtCmomGDxUvSMmfE1qWe13vc
+=================
+const sheetId = 'TU_ID_DE_HOJA';  // ID de la hoja de cálculo (parte de la URL de Google Sheets)
+const apiKey = 'TU_CLAVE_DE_API'; // Clave de API de Google
+
+// Cargar los datos de Google Sheets
+fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`)
+  .then(response => response.json())
+  .then(data => {
+    console.log(data.values); // Aquí tienes los datos de la hoja
+  })
+  .catch(error => console.error('Error al obtener los datos:', error));
+
+// Para escribir datos en Google Sheets, necesitas hacer un POST con datos específicos
+const data = {
+  values: [
+    ['Nuevo dato 1', 'Nuevo dato 2'],
+  ]
+};
+
+fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A2:append?valueInputOption=RAW&key=${apiKey}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(data),
+})
+.then(response => response.json())
+.then(result => console.log('Datos enviados:', result))
+.catch(error => console.error('Error al enviar datos:', error));
+
+============
+
+function doGet() {
+  const sheet = SpreadsheetApp.openById('TU_ID_DE_HOJA');
+  const range = sheet.getSheetByName('Sheet1').getRange('A1:B10');
+  const values = range.getValues();
+  return ContentService.createTextOutput(JSON.stringify(values)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  const sheet = SpreadsheetApp.openById('TU_ID_DE_HOJA');
+  const range = sheet.getSheetByName('Sheet1').getRange('A1');
+  const data = JSON.parse(e.postData.contents);
+  range.setValue(data.value); // Escribir en la hoja
+}
+
+
 */
 const main = async () => {
     const adapterFlow = createFlow([
