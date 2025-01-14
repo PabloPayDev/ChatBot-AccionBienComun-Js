@@ -195,16 +195,17 @@ const registroCantidadOpciones = async (numero, valor, idpreg) => {
 }
 
 const obtenerCantidadesErroneas = async (numero, valor, idpreg) => {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    const now = new Date();
+    const oneHourAgo = new Date(now);
+    oneHourAgo.setHours(now.getHours() - 1);
+
     const dato = await historyModel.find(
         {
             from: numero,
             idPregunta: idpreg,
             date: {
-                $gte: startOfDay,
-                $lt: endOfDay
+                $gte: oneHourAgo,
+                $lt: now 
             }
         }
     )
@@ -656,7 +657,7 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '1':
                         return gotoFlow(flowExpedido);
                     case '0':
-                        const no = await obtenerRegistroNombrecompleto(ctx.from, ctx.body, "Sin nombre.");
+                        const no = await obtenerRegistroNombrecompleto(ctx.from, ctx.body, ctx.pushName);
                         return gotoFlow(flowUbicacion);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '5');
@@ -664,7 +665,8 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return endFlow({
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
-                        } else {
+                        } 
+                        else {
                             await flowDynamic('Por favor necesito que selecciones una opción válida.');
                             return fallBack();
                         }
