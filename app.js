@@ -378,7 +378,7 @@ const esStringAlfanumericoValido = (mensaje) => {
     if (mensajeLimpio === '') {
         return false;
     }
-    const regexInvalido = /[^a-zA-Z0-9 \u00C0-\u017F]/u;
+    const regexInvalido = /[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ,.;!?¿()'"-_ \s]/u;
     if (regexInvalido.test(mensajeLimpio)) {
         return false;
     }
