@@ -1229,9 +1229,7 @@ async function getResumen(ctx){
             `✅ Dirección: ${campos.Ubicacion}.\n` +
             `✅ Ubicacion: ${rutacompuesta}.\n` +
             `✅ Foto/video: ${campos.convideo}.\n` +
-            `✅ Fecha de solicitud: ${formatearFecha(campos.fecha)} \n` +
-            `---------------\n` +
-            `Tu solicitud ha sido registrada y será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. ¡Gracias por tu contribución!`;
+            `✅ Fecha de solicitud: ${formatearFecha(campos.fecha)}`;
 
         return resumenToSend;
     } 
