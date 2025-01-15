@@ -299,7 +299,7 @@ const exportarExcel = async () => {
             { header: 'Ubicacion', key: 'row3', width: 20 },
             { header: 'CI', key: 'row4', width: 20 },
             { header: 'Fecha', key: 'row5', width: 20 },
-            { header: 'Media', key: 'row6', width: 20 },
+            { header: 'Foto/Video', key: 'row6', width: 20 },
             { header: 'Ruta del Mapa', key: 'row8', width: 40 },
         ];
         worksheet.getRow(1).font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
@@ -318,15 +318,17 @@ const exportarExcel = async () => {
             };
         });
         solicitudes.forEach(solicitud => {
-            worksheet.addRow({
-                row1: solicitud.numero,
+            const row = worksheet.addRow({
+                row1: Number(solicitud.numero),
                 row2: solicitud.nombreCompleto,
                 row3: solicitud.Ubicacion,
-                row4: solicitud.ci,
+                row4: Number(solicitud.ci),
                 row5: solicitud.fecha,
                 row6: solicitud.convideo,
                 row8: solicitud.rutadelmapa
             });
+            row.getCell('row1').numFmt = '0';
+            row.getCell('row4').numFmt = '0';
         });
         worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
             if (rowNumber !== 1) {
@@ -1388,55 +1390,7 @@ app.get('/descargar-reporte', (req, res) => {
         }
     });
 });
-/*
-=================
-const sheetId = 'TU_ID_DE_HOJA';  // ID de la hoja de cálculo (parte de la URL de Google Sheets)
-const apiKey = 'TU_CLAVE_DE_API'; // Clave de API de Google
 
-// Cargar los datos de Google Sheets
-fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`)
-  .then(response => response.json())
-  .then(data => {
-    console.log(data.values); // Aquí tienes los datos de la hoja
-  })
-  .catch(error => console.error('Error al obtener los datos:', error));
-
-// Para escribir datos en Google Sheets, necesitas hacer un POST con datos específicos
-const data = {
-  values: [
-    ['Nuevo dato 1', 'Nuevo dato 2'],
-  ]
-};
-
-fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A2:append?valueInputOption=RAW&key=${apiKey}`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(data),
-})
-.then(response => response.json())
-.then(result => console.log('Datos enviados:', result))
-.catch(error => console.error('Error al enviar datos:', error));
-
-============
-
-function doGet() {
-  const sheet = SpreadsheetApp.openById('TU_ID_DE_HOJA');
-  const range = sheet.getSheetByName('Sheet1').getRange('A1:B10');
-  const values = range.getValues();
-  return ContentService.createTextOutput(JSON.stringify(values)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  const sheet = SpreadsheetApp.openById('TU_ID_DE_HOJA');
-  const range = sheet.getSheetByName('Sheet1').getRange('A1');
-  const data = JSON.parse(e.postData.contents);
-  range.setValue(data.value); // Escribir en la hoja
-}
-
-
-*/
 const main = async () => {
     const adapterFlow = createFlow([
         inicio,
