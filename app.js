@@ -706,34 +706,34 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                 switch (opcion) {
                     case '1':
                         const valor = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'LPZ');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '2':
                         const valor2 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'CBB');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '3':
                         const valor3 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'SCZ');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '4':
                         const valor4 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'CHQ');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '5':
                         const valor5 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'TJA');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '6':
                         const valor6 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'PTS');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '7':
                         const valor7 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'ORU');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '8':
                         const valor8 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'BNI');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '9':
                         const valor9 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'PND');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     case '10':
                         const valor10 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'EXT');
-                        return gotoFlow(flowNombre);
+                        return gotoFlow(flowApellidoPaterno);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '6');
                         if (intentos > 2) {
@@ -745,40 +745,6 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return fallBack();
                         }
 
-                }
-            } catch (error) {
-                console.error(`Error: ${error.message}`);
-            }
-        }
-    );
-
-const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n Nombres`
-    ],
-        { capture: true, idle: 300000 },
-        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
-            try {
-                if (ctx?.idleFallBack) {
-                    return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                    });
-                }
-                if (esStringAlfabeticoValido(ctx.body)) {
-                    const valor = await obtenerRegistro(ctx.from, ctx.body, 'NOMBRES');
-                    return gotoFlow(flowApellidoPaterno);
-                } 
-                else {
-                    const opcion = ctx.body;
-                    const intentos = await cantidadSolicitudes(ctx.from, opcion, '7');
-                    if (intentos > 2) {
-                        return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
-                        });
-                    } else {
-                        await flowDynamic('❌. Por favor, ingresa un nombre válido. Solo se admiten letras.');
-                        return fallBack();
-                    }
                 }
             } catch (error) {
                 console.error(`Error: ${error.message}`);
@@ -834,7 +800,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                 }
                 if (esStringAlfabeticoValido(ctx.body)) {
                     const valor = await obtenerRegistro(ctx.from, ctx.body, 'MATERNO');
-                    return gotoFlow(flowCorreo);
+                    return gotoFlow(flowNombre);
                 } 
                 else {
                     const opcion = ctx.body;
@@ -853,6 +819,42 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
             }
         }
     );
+
+const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer(
+        [
+            `Por favor, ingresa los siguientes datos para registrarte.\n Nombres`
+        ],
+        { capture: true, idle: 300000 },
+        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+            try {
+                if (ctx?.idleFallBack) {
+                    return endFlow({
+                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                    });
+                }
+                if (esStringAlfabeticoValido(ctx.body)) {
+                    const valor = await obtenerRegistro(ctx.from, ctx.body, 'NOMBRES');
+                    return gotoFlow(flowCorreo);
+                } 
+                else {
+                    const opcion = ctx.body;
+                    const intentos = await cantidadSolicitudes(ctx.from, opcion, '7');
+                    if (intentos > 2) {
+                        return endFlow({
+                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
+                        });
+                    } else {
+                        await flowDynamic('❌. Por favor, ingresa un nombre válido. Solo se admiten letras.');
+                        return fallBack();
+                    }
+                }
+            } catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
+        }
+    );
+
 
 const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
@@ -1147,19 +1149,24 @@ const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
-
-                await flowDynamic('Gracias');
-                try {
-                    let resumeToSend = await getResumen(ctx);
-                    await flowDynamic([{
-                        body: resumeToSend,
-                        delay: 200
-                    }]);
-                } 
-                catch (error) {
-                    console.error('Error en el flujo:', error);
+                if((ctx.body).startsWith("_event_media")){
+                    await flowDynamic('Gracias');
+                    try {
+                        let resumeToSend = await getResumen(ctx);
+                        await flowDynamic([{
+                            body: resumeToSend,
+                            delay: 200
+                        }]);
+                    } 
+                    catch (error) {
+                        console.error('Error en el flujo:', error);
+                    }
+                    return gotoFlow(flowResumen);
                 }
-                return gotoFlow(flowResumen);
+                else{
+                    await flowDynamic('❌. Por favor envia un archivo valido.');
+                    return fallBack();
+                }
             } 
             catch (error) {
                 console.error(`Error: ${error.message}`);
@@ -1325,7 +1332,7 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                         await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
                         return gotoFlow(flowUbicacion);
                     case '0':
-                        await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
+                        await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
                         return gotoFlow(inicio);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
