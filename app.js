@@ -196,15 +196,15 @@ const registroCantidadOpciones = async (numero, valor, idpreg) => {
 
 const obtenerCantidadesErroneas = async (numero, valor, idpreg) => {
     const now = new Date();
-    const oneHourAgo = new Date(now);
-    oneHourAgo.setHours(now.getHours() - 1);
+    const timelapse = new Date(now);
+    timelapse.setMinutes(now.getMinutes() - 1);
 
     const dato = await historyModel.find(
         {
             from: numero,
             idPregunta: idpreg,
             date: {
-                $gte: oneHourAgo,
+                $gte: timelapse,
                 $lt: now 
             }
         }
