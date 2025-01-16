@@ -51,7 +51,7 @@ const registrarSolicitudes = async (campos) => {
 }
 
 async function saludoInicial() {
-    console.log("Demora");
+    console.log("=== Saludo Inicial ===");
     try {
         const response = await axios.get('https://amun.bo/wp-json/juevesAccion/v1/posts-categoria/100-jueves-accion', {
             timeout: 90000
@@ -197,7 +197,7 @@ const registroCantidadOpciones = async (numero, valor, idpreg) => {
 const obtenerCantidadesErroneas = async (numero, valor, idpreg) => {
     const now = new Date();
     const timelapse = new Date(now);
-    timelapse.setMinutes(now.getMinutes() - 1);
+    timelapse.setMinutes(now.getMinutes() - 5);
 
     const dato = await historyModel.find(
         {
@@ -360,6 +360,12 @@ async function cantidadSolicitudes(numero, valor, idpreg) {
 }
 
 const esStringAlfabeticoValido = (mensaje) => {
+    if (mensaje.startsWith('_event_media')) {
+        return false;
+    }
+    if (mensaje.startsWith('_event_location')) {
+        return false;
+    }
     if (typeof mensaje !== 'string') {
         return false;
     }
@@ -374,6 +380,12 @@ const esStringAlfabeticoValido = (mensaje) => {
     return true;
 };
 const esStringAlfanumericoValido = (mensaje) => {
+    if (mensaje.startsWith('_event_media')) {
+        return false;
+    }
+    if (mensaje.startsWith('_event_location')) {
+        return false;
+    }
     if (typeof mensaje !== 'string') {
         return false;
     }
