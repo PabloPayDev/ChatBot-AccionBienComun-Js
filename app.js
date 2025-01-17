@@ -497,8 +497,7 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
             '1️⃣. Quiero saber más sobre el programa',
             '2️⃣. Quiero hacer una solicitud',
             '3️⃣. Hacer seguimiento',
-            '4️⃣. Cancelar',
-            'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte!'
+            'Para consultas generales, por favor, comunícate con nuestra *línea gratuita al 155*. ¡Estamos para ayudarte!'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -523,10 +522,6 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
                         return gotoFlow(flowBuscadorCIServicio);
                     case '3':
                         return gotoFlow(tiempoEsperado);
-                    case '4':
-                        return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                        });
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
@@ -613,9 +608,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                     }
                 };
                 if (opcion === '0') {
-                    return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                    });
+                    return gotoFlow(inicio);
                 }
                 const cedula = ctx.body;
                 if (!esCIValido(cedula, cedula.length)) {
@@ -653,10 +646,10 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
 const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
         `❌ No encontramos tu C.I. en nuestros registros.`,
-        `Desea realizar el registro?`,
-        'Seleccione una opcion por favor:',
-        '1️⃣. Registrar ahora.',
-        '0️⃣. Continuar sin registrar.'
+        `¿Te gustaria registrarte?`,
+        '1️⃣. Si, registrarme.',
+        '2️⃣. No, y continuar con la solicitud.',
+        '0️⃣. Cancelar.'
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -670,9 +663,13 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                 switch (opcion) {
                     case '1':
                         return gotoFlow(flowExpedido);
-                    case '0':
+                    case '2':
                         const no = await obtenerRegistroNombrecompleto(ctx.from, ctx.body, ctx.pushName);
                         return gotoFlow(flowUbicacion);
+                    case '0':
+                        return endFlow({
+                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                        });
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '5');
                         if (intentos > 2) {
@@ -707,6 +704,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
         `8 -> BNI - BENI`,
         `9 -> PND - PANDO`,
         `10 -> EXT - EXTRANJERO`,
+        '0️⃣. Regresar al Inicio.'
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -748,6 +746,10 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '10':
                         const valor10 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'EXT');
                         return gotoFlow(flowApellidoPaterno);
+                    case '0':
+                        return endFlow({
+                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                        });
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '6');
                         if (intentos > 2) {
@@ -768,7 +770,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n Apellido Paterno`
+        `Ingresa tu apellido paterno.`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -790,7 +792,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic('❌. Por favor, ingresa un apellido paterno válido. Solo se admiten letras.');
+                        await flowDynamic('❌. Por favor, ingresa un apellido paterno válido, solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -802,7 +804,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n Apellido Materno`
+        `Ingresa tu apellido materno.`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -824,7 +826,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic('❌. Por favor, ingresa un apellido materno válido. Solo se admiten letras.');
+                        await flowDynamic('❌. Por favor, ingresa un apellido materno válido, solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -837,7 +839,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
 const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer(
         [
-            `Por favor, ingresa los siguientes datos para registrarte.\n Nombres`
+            `Ingresa tus nombres.`
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -859,7 +861,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic('❌. Por favor, ingresa un nombre válido. Solo se admiten letras.');
+                        await flowDynamic('❌. Por favor, ingresa un nombre válido, solo se admiten letras.');
                         return fallBack();
                     }
                 }
@@ -872,7 +874,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa los siguientes datos para registrarte.\n Correo Electronico`
+        `Ingresa tu correo electronico.`
     ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -970,7 +972,7 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor necesito valores reales');
                         return fallBack();
                     }
                 }
@@ -980,13 +982,56 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
         }
     );
 
+const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer(
+        [
+            '📍¿Dónde te gustaría que realizáramos esta acción? \nDescribe la dirección del lugar con la mayor precisión posible (Ej: Zona, calle/avenida, al lado de, frente a). \n0️⃣. Regresar al Inicio.'
+        ],
+        { capture: true, idle: 300000 },
+        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+            try {
+                if (ctx?.idleFallBack) {
+                    return endFlow({
+                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                    });
+                }
+                if (ctx.body == '0') {
+                    return endFlow({
+                        body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                    });
+                } 
+                if (esStringAlfanumericoValido(ctx.body)) {
+                    const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONDESC');
+                    return gotoFlow(flowMenuUbicacion);
+                } 
+                else {
+                    const opcion = ctx.body;
+                    const intentos = await cantidadSolicitudes(ctx.from, opcion, '15');
+                    if (intentos > 2) {
+                        return endFlow({
+                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        });
+                    } 
+                    else {
+                        await flowDynamic('❌. Por favor necesito valores reales');
+                        return fallBack();
+                    }
+                }
+            } catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
+        }
+    );
+    
+
 const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer(
         [
             '📍 Para ayudarnos a identificar el lugar exacto, ¿podrías compartirnos la ubicación del lugar?',
             'Seleccione una opcion por favor:',
             '1️⃣. Enviar ubicación del lugar.',
-            '0️⃣. No tengo la ubicación lugar.'
+            '2️⃣. No tengo la ubicación lugar.',
+            '0️⃣. Cancelar.'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -1001,20 +1046,24 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '1':
                         const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONURL');
                         return gotoFlow(flowUbicacionGeoreferenciada);
-                    case '0':
+                    case '2':
                         const valo2 = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONURL');
                         const valo3 = await obtenerRegistroRutaMapa(ctx.from, ctx.body, 'RUTAMAPA', `Sin ubicacion`);
                         await flowDynamic('¡No hay problema! Agradecemos igual tu contribución.');
                         return gotoFlow(flowFotos);
+                    case '0':
+                        return endFlow({
+                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                        });
                     default:
                         const opcion = ctx.body;
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '13');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Has alcanzado el limite de intentos. Por favor, empieza de nuevo y te ayudare con el proceso. \n0️⃣. Regresar al Inicio.`
                             });
                         } else {
-                            await flowDynamic('Por favor selecciona una opción válida.');
+                            await flowDynamic('❌. Por favor selecciona una opción válida.');
                             return fallBack();
                         }
                 }
@@ -1027,7 +1076,7 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
 const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: true })
     .addAnswer(
         [
-            'Por favor, Envie la ubicacion del lugar.'
+            'Por favor, Envie la ubicacion del lugar. \n0️⃣. Cancelar.'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -1037,6 +1086,11 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                         body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
+                if (ctx.body == '0') {
+                    return endFlow({
+                        body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                    });
+                } 
                 if (ctx.message.locationMessage) {
                     const valo = await obtenerRegistroRutaMapa(ctx.from, ctx.body, 'RUTAMAPA', `https://www.google.com/maps/search/?api=1&query=${ctx.message.locationMessage.degreesLatitude},${ctx.message.locationMessage.degreesLongitude}`);
                     await flowDynamic(`📍 Hemos registrado la ubicacion: ${ctx.message.locationMessage.degreesLatitude} / ${ctx.message.locationMessage.degreesLongitude}`);
@@ -1051,43 +1105,7 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                         });
                     } 
                     else {
-                        await flowDynamic('Por favor, envíame una ubicación válida.');
-                        return fallBack();
-                    }
-                }
-            } catch (error) {
-                console.error(`Error: ${error.message}`);
-            }
-        }
-    );
-
-const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer(
-        [
-            '📍¿Dónde te gustaría que realizáramos esta acción? \nDescribe la dirección del lugar con la mayor precisión posible (Ej: Zona, calle/avenida, al lado de, frente a).'
-        ],
-        { capture: true, idle: 300000 },
-        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
-            try {
-                if (ctx?.idleFallBack) {
-                    return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                    });
-                }
-                if (esStringAlfanumericoValido(ctx.body)) {
-                    const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONDESC');
-                    return gotoFlow(flowMenuUbicacion);
-                } 
-                else {
-                    const opcion = ctx.body;
-                    const intentos = await cantidadSolicitudes(ctx.from, opcion, '15');
-                    if (intentos > 2) {
-                        return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                        });
-                    } 
-                    else {
-                        await flowDynamic(' Por favor necesito valores reales');
+                        await flowDynamic('❌. Por favor, envíame una ubicación válida.');
                         return fallBack();
                     }
                 }
@@ -1100,10 +1118,11 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
 const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer(
         [
-            '📷 Ahora, si tienes alguna fotografía o video del lugar, sería genial que nos compartas para entender mejor la situación.',
+            '📷 Ahora, si tienes alguna fotografía enviala para entender mejor la situacion.',
             'Seleccione una opcion por favor:',
-            '1️⃣. Enviar fotografías o videos',
-            '0️⃣. No dispongo de fotos o videos'
+            '1️⃣. Enviar fotografías',
+            '2️⃣. No dispongo de fotografia',
+            '0️⃣. Cancelar'
         ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
@@ -1118,7 +1137,7 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '1':
                         const valo = await obtenerRegistro(ctx.from, ctx.body, 'SUBIOFOTO');
                         return gotoFlow(flowAdjuntos);
-                    case '0':
+                    case '2':
                         const valo2 = await obtenerRegistro(ctx.from, ctx.body, 'SUBIOFOTO');
                         await flowDynamic('¡No hay problema! Agradecemos igual tu contribución.');
                         try {
@@ -1132,6 +1151,10 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                             console.error('Error en el flujo:', error);
                         }
                         return gotoFlow(flowResumen);
+                    case '0':
+                        return endFlow({
+                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
+                        });
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
@@ -1139,7 +1162,7 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } else {
-                            await flowDynamic('Por favor selecciona una opción válida.');
+                            await flowDynamic('❌. Por favor selecciona una opción válida.');
                             return fallBack();
                         }
                 }
@@ -1164,7 +1187,6 @@ const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
                     });
                 }
                 if((ctx.body).startsWith("_event_media")){
-                    await flowDynamic('Gracias');
                     try {
                         let resumeToSend = await getResumen(ctx);
                         await flowDynamic([{
@@ -1245,7 +1267,7 @@ async function getResumen(ctx){
         if (campos.rutadelmapa) {
             rutacompuesta = campos.rutadelmapa;
         }
-        let resumenToSend = `¡Gracias, continuación, te muestro un resumen de la informacion que enviaras:\n` +
+        let resumenToSend = `¡A continuación, te muestro un resumen de la informacion que enviaras:\n` +
             `✅ Nombre completo: ${campos.nombreCompleto} \n` +
             `✅ Dirección: ${campos.Ubicacion}.\n` +
             `✅ Ubicacion: ${rutacompuesta}.\n` +
@@ -1340,10 +1362,10 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                             console.error('Error en el flujo:', error);
                         }
                         return endFlow({ 
-                            body: 'Tu solicitud ha sido registrada, será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. \n0️⃣. Regresar al Inicio.'
+                            body: '¡Gracias, tu solicitud ha sido registrada, será sometida a una inspección previa para asegurar que podamos realizar la acción de la mejor manera posible. \n0️⃣. Regresar al Inicio.'
                         });
                     case '2':
-                        await flowDynamic('❌. Operacion cancelada, volviendo al menu.');
+                        await flowDynamic('❌. Entendido: cancelar esta solicitud y enviar una nueva.');
                         return gotoFlow(flowUbicacion);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
@@ -1377,7 +1399,7 @@ const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
             await flowDynamic([
                 {
                     body: "REPORTE",
-                    media: process.env.APP_CURRENT_URL+'/descargar-reporte',
+                    media: process.env.APP_CURRENT_URL+':4002/SolicitudesSaved.xlsx',
                     delay: 200
                 }
             ]);
