@@ -667,9 +667,8 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const no = await obtenerRegistroNombrecompleto(ctx.from, ctx.body, ctx.pushName);
                         return gotoFlow(flowUbicacion);
                     case '0':
-                        return endFlow({
-                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                        });
+                        await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                        return gotoFlow(inicio);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '5');
                         if (intentos > 2) {
@@ -747,9 +746,8 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const valor10 = await obtenerRegistroExpedido(ctx.from, ctx.body, 'EXPEDIDO', 'EXT');
                         return gotoFlow(flowApellidoPaterno);
                     case '0':
-                        return endFlow({
-                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                        });
+                        await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                        return gotoFlow(inicio);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '6');
                         if (intentos > 2) {
@@ -996,9 +994,8 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                     });
                 }
                 if (ctx.body == '0') {
-                    return endFlow({
-                        body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                    });
+                    await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                    return gotoFlow(inicio);
                 } 
                 if (esStringAlfanumericoValido(ctx.body)) {
                     const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONDESC');
@@ -1052,9 +1049,8 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                         await flowDynamic('¡No hay problema! Agradecemos igual tu contribución.');
                         return gotoFlow(flowFotos);
                     case '0':
-                        return endFlow({
-                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                        });
+                        await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                        return gotoFlow(inicio);
                     default:
                         const opcion = ctx.body;
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '13');
@@ -1087,9 +1083,8 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                     });
                 }
                 if (ctx.body == '0') {
-                    return endFlow({
-                        body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                    });
+                    await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                    return gotoFlow(inicio);
                 } 
                 if (ctx.message.locationMessage) {
                     const valo = await obtenerRegistroRutaMapa(ctx.from, ctx.body, 'RUTAMAPA', `https://www.google.com/maps/search/?api=1&query=${ctx.message.locationMessage.degreesLatitude},${ctx.message.locationMessage.degreesLongitude}`);
@@ -1152,9 +1147,8 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                         }
                         return gotoFlow(flowResumen);
                     case '0':
-                        return endFlow({
-                            body: `❌. Operacion cancelada. \n0️⃣. Regresar al Inicio.`
-                        });
+                        await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
+                        return gotoFlow(inicio);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
