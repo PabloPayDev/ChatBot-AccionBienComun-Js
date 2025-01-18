@@ -528,7 +528,8 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
                             return endFlow({
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
-                        } else {
+                        } 
+                        else {
                             await flowDynamic('Por favor necesito que selecciones una opción válida.');
                             return fallBack();
                         }
@@ -560,9 +561,13 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
                     case '1':
                         return gotoFlow(flowBuscadorCIServicio);
                     case '2':
-                        return endFlow({ body: 'Gracias por tu interés en los "100 Jueves de Acción por el Bien Común". ¡Hasta pronto! \n0️⃣. Regresar al Inicio.' });
+                        return endFlow({ 
+                            body: 'Gracias por tu interés en los "100 Jueves de Acción por el Bien Común". ¡Hasta pronto! \n0️⃣. Regresar al Inicio.' 
+                        });
                     case '3':
-                        return endFlow({ body: 'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte! \n0️⃣. Regresar al Inicio.' });
+                        return endFlow({ 
+                            body: 'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte! \n0️⃣. Regresar al Inicio.' 
+                        });
                     case '4':
                         return gotoFlow(inicio);
                     default:
@@ -571,7 +576,8 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return endFlow({
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
-                        } else {
+                        } 
+                        else {
                             await flowDynamic('Por favor necesito que selecciones una opción válida.');
                             return fallBack();
                         }
@@ -602,7 +608,8 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
-                    } else {
+                    } 
+                    else {
                         await flowDynamic('Verifica que el valor sea numérico y tenga al menos 5 dígitos.');
                         return fallBack();
                     }
@@ -754,22 +761,24 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return endFlow({
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
-                        } else {
+                        } 
+                        else {
                             await flowDynamic('Por favor necesito que selecciones una opción válida.');
                             return fallBack();
                         }
-
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
     );
 
 const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        `Ingresa tu apellido paterno.`
-    ],
+    .addAnswer(
+        [
+            `Ingresa tu apellido paterno.`
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -801,9 +810,10 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        `Ingresa tu apellido materno.`
-    ],
+    .addAnswer(
+        [
+            `Ingresa tu apellido materno.`
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -823,12 +833,14 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return endFlow({
                             body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
-                    } else {
+                    } 
+                    else {
                         await flowDynamic('❌. Por favor, ingresa un apellido materno válido, solo se admiten letras.');
                         return fallBack();
                     }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -871,9 +883,10 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 
 const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        `Ingresa tu correo electronico.`
-    ],
+    .addAnswer(
+        [
+            `Ingresa tu correo electronico.`
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -939,7 +952,8 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return fallBack();
                     }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -1014,7 +1028,8 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return fallBack();
                     }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -1063,7 +1078,8 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return fallBack();
                         }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -1104,7 +1120,8 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                         return fallBack();
                     }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
@@ -1155,7 +1172,8 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                             return endFlow({
                                 body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
-                        } else {
+                        } 
+                        else {
                             await flowDynamic('❌. Por favor selecciona una opción válida.');
                             return fallBack();
                         }
@@ -1408,16 +1426,6 @@ app.use(express.json());
 app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/descargar-reporte', (req, res) => {
-    const filePath = path.join(__dirname, 'public', 'SolicitudesSaved.xlsx');
-    res.download(filePath, 'SolicitudesSaved.xlsx', (err) => {
-        if (err) {
-            console.error('Error al descargar el archivo:', err);
-            res.status(500).send('Hubo un problema al descargar el archivo.');
-        }
-    });
-});
 
 const main = async () => {
     const adapterFlow = createFlow([
