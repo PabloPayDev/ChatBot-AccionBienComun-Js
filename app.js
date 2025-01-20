@@ -449,7 +449,7 @@ const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: tru
                 const opcion = ((ctx.body).toLowerCase());
                 switch (opcion) {
                     case 'salirahora':
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     case '100jueves':
                         return gotoFlow(flowBuscadorCIServicio);
                     default:
@@ -534,20 +534,73 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
                             return fallBack();
                         }
                 }
-            } catch (error) {
+            } 
+            catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
+        }
+    );
+
+const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer(
+        [
+            `Seleccione una opcion por favor:`,
+            '1️⃣. Quiero saber más sobre el programa',
+            '2️⃣. Quiero hacer una solicitud',
+            '3️⃣. Hacer seguimiento',
+            'Para consultas generales, por favor, comunícate con nuestra *línea gratuita al 155*. ¡Estamos para ayudarte!'
+        ],
+        { capture: true, idle: 300000 },
+        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+            try {
+                if (ctx?.idleFallBack) {
+                    return endFlow({
+                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                    });
+                }
+                const opcion = ctx.body;
+                switch (opcion) {
+                    case '1':
+                        await flowDynamic([
+                            {
+                                body: 'El programa ‘100 Jueves de Acción por el Bien Común’ busca mejorar los espacios públicos a través de acciones como deshierbe, limpieza de aceras y cunetas. ¡Participa haciendo una solicitud!"',
+                                media: 'https://lapaz.bo/videos/video-100-jueves.mp4',
+                                delay: 200
+                            }
+                        ])
+                        return gotoFlow(flowSobrePrograma);
+                    case '2':
+                        return gotoFlow(flowBuscadorCIServicio);
+                    case '3':
+                        return gotoFlow(tiempoEsperado);
+                    default:
+                        const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
+                        if (intentos > 2) {
+                            return endFlow({
+                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            });
+                        } 
+                        else {
+                            await flowDynamic('Por favor necesito que selecciones una opción válida.');
+                            return fallBack();
+                        }
+                }
+            } 
+            catch (error) {
                 console.error(`Error: ${error.message}`);
             }
         }
     );
 
 const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
-    .addAnswer([
-        `Seleccione una opcion por favor:`,
-        '1️⃣. Sí, quiero hacer una solicitud',
-        '2️⃣. No, gracias',
-        '3️⃣. Tengo otra consulta',
-        '4️⃣. Volver al menu principal'
-    ],
+    .addAnswer(
+        [
+            `Seleccione una opcion por favor:`,
+            '1️⃣. Sí, quiero hacer una solicitud',
+            '2️⃣. No, gracias',
+            '3️⃣. Tengo otra consulta',
+            '4️⃣. Volver al menu principal'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -569,7 +622,7 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
                             body: 'Para consultas generales, por favor, comunícate con nuestra línea gratuita al 155. ¡Estamos para ayudarte! \n0️⃣. Regresar al Inicio.' 
                         });
                     case '4':
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '3');
                         if (intentos > 2) {
@@ -615,7 +668,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                     }
                 };
                 if (opcion === '0') {
-                    return gotoFlow(inicio);
+                    return gotoFlow(inicioFlow);
                 }
                 const cedula = ctx.body;
                 if (!esCIValido(cedula, cedula.length)) {
@@ -675,7 +728,7 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowUbicacion);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '5');
                         if (intentos > 2) {
@@ -754,7 +807,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowApellidoPaterno);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '6');
                         if (intentos > 2) {
@@ -1009,7 +1062,7 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                 }
                 if (ctx.body == '0') {
                     await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                    return gotoFlow(inicio);
+                    return gotoFlow(inicioFlow);
                 } 
                 if (esStringAlfanumericoValido(ctx.body)) {
                     const valo = await obtenerRegistro(ctx.from, ctx.body, 'UBICACIONDESC');
@@ -1065,7 +1118,7 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowFotos);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const opcion = ctx.body;
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '13');
@@ -1100,7 +1153,7 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                 }
                 if (ctx.body == '0') {
                     await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                    return gotoFlow(inicio);
+                    return gotoFlow(inicioFlow);
                 } 
                 if (ctx.message.locationMessage) {
                     const valo = await obtenerRegistroRutaMapa(ctx.from, ctx.body, 'RUTAMAPA', `https://www.google.com/maps/search/?api=1&query=${ctx.message.locationMessage.degreesLatitude},${ctx.message.locationMessage.degreesLongitude}`);
@@ -1165,7 +1218,7 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowResumen);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
@@ -1381,7 +1434,7 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowUbicacion);
                     case '0':
                         await flowDynamic('❌. Operacion cancelada, volviendo al inicio.');
-                        return gotoFlow(inicio);
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
@@ -1430,6 +1483,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const main = async () => {
     const adapterFlow = createFlow([
         inicio,
+        inicioFlow,
         flowReporte,
         tiempoEsperado,
         flowUbicacion,
