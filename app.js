@@ -482,7 +482,7 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
             '1️⃣. Quiero saber más sobre el programa',
             '2️⃣. Quiero hacer una solicitud',
             '3️⃣. Hacer seguimiento',
-            '4️⃣. Saber noticia',
+            '4️⃣. Blog noticias 100Jueves',
             'Para consultas generales, por favor, comunícate con nuestra *línea gratuita al 155*. ¡Estamos para ayudarte!'
         ],
         { capture: true, idle: 300000 },
