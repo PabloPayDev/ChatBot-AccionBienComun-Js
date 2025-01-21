@@ -504,7 +504,7 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -526,7 +526,7 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -555,7 +555,7 @@ const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -577,7 +577,7 @@ const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -606,7 +606,7 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -627,7 +627,7 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '3');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -651,7 +651,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -659,7 +659,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '4');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } 
                     else {
@@ -688,7 +688,7 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
                     if (datos.error.message == 'No se encontro coincidencia con el numero de celular ingresado') {
                         await flowDynamic('Hemos validado tu C.I. y número de celular, y parece que has cambiado de número. Para actualizarlo, por favor visita el siguiente enlace: \nhttps://igob247.lapaz.bo/app/view/autenticacion/partials/login_.html \n Una vez actualizado, vuelve aquí para completar tu solicitud.');
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } 
                     else {
@@ -716,7 +716,7 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -733,7 +733,7 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '5');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -770,7 +770,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -812,7 +812,7 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '6');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -837,7 +837,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (esStringAlfabeticoValido(ctx.body)) {
@@ -849,7 +849,7 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '8');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
                         await flowDynamic('❌. Por favor, ingresa un apellido paterno válido, solo se admiten letras.');
@@ -872,7 +872,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (esStringAlfabeticoValido(ctx.body)) {
@@ -884,7 +884,7 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '9');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } 
                     else {
@@ -909,7 +909,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (esStringAlfabeticoValido(ctx.body)) {
@@ -921,7 +921,7 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '7');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde!\n0️⃣. Regresar al Inicio.`
                         });
                     } else {
                         await flowDynamic('❌. Por favor, ingresa un nombre válido, solo se admiten letras.');
@@ -945,7 +945,7 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (esCorreoValido(ctx.body)) {
@@ -998,7 +998,7 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '10');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
                         await flowDynamic('❌. Por favor, ingresa un correo electrónico válido. Asegúrate de que tenga un formato correcto (por ejemplo, usuario@dominio.com).');
@@ -1022,7 +1022,7 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 otros = ctx.body;
@@ -1034,7 +1034,7 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '12');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } else {
                         await flowDynamic('❌. Por favor necesito valores reales');
@@ -1057,7 +1057,7 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (ctx.body == '0') {
@@ -1073,7 +1073,7 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '15');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } 
                     else {
@@ -1103,7 +1103,7 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -1148,7 +1148,7 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if (ctx.body == '0') {
@@ -1165,7 +1165,7 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
                     const intentos = await cantidadSolicitudes(ctx.from, opcion, '14');
                     if (intentos > 2) {
                         return endFlow({
-                            body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                         });
                     } 
                     else {
@@ -1194,7 +1194,7 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -1223,7 +1223,7 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
@@ -1248,7 +1248,7 @@ const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 if((ctx.body).startsWith("_event_media")){
@@ -1359,7 +1359,7 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -1439,7 +1439,7 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '16');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vemos que estas ocupad@ vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
                             });
                         } 
                         else {
