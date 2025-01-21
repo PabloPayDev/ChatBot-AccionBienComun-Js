@@ -463,21 +463,6 @@ const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: tru
     );
 
 const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
-    .addAction(async (_, { flowDynamic }) => {
-        try {
-            const servicio = await saludoInicial();
-            const fechaFormateada = formatearFecha(new Date(servicio[0].date));
-            await flowDynamic([
-                {
-                    body: `${servicio[0].title}\n${fechaFormateada}\n${servicio[0].link}`,
-                    media: servicio[0].featured_image,
-                }
-            ])
-        } 
-        catch (error) {
-            console.log(error);
-        }
-    })
     .addAction(async (ctx, { flowDynamic }) => {
         try {
             const message = [
@@ -497,6 +482,7 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
             '1️⃣. Quiero saber más sobre el programa',
             '2️⃣. Quiero hacer una solicitud',
             '3️⃣. Hacer seguimiento',
+            '4️⃣. Saber noticia',
             'Para consultas generales, por favor, comunícate con nuestra *línea gratuita al 155*. ¡Estamos para ayudarte!'
         ],
         { capture: true, idle: 300000 },
@@ -522,6 +508,8 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
                         return gotoFlow(flowBuscadorCIServicio);
                     case '3':
                         return gotoFlow(tiempoEsperado);
+                    case '4':
+                        return gotoFlow(flowNoticia);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
@@ -564,8 +552,7 @@ const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
                         await flowDynamic([
                             {
                                 body: 'El programa ‘100 Jueves de Acción por el Bien Común’ busca mejorar los espacios públicos a través de acciones como deshierbe, limpieza de aceras y cunetas. ¡Participa haciendo una solicitud!"',
-                                media: 'https://lapaz.bo/videos/video-100-jueves.mp4',
-                                delay: 200
+                                media: 'https://lapaz.bo/videos/video-100-jueves.mp4'
                             }
                         ])
                         return gotoFlow(flowSobrePrograma);
@@ -573,6 +560,58 @@ const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
                         return gotoFlow(flowBuscadorCIServicio);
                     case '3':
                         return gotoFlow(tiempoEsperado);
+                    default:
+                        const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
+                        if (intentos > 2) {
+                            return endFlow({
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                            });
+                        } 
+                        else {
+                            await flowDynamic('Por favor necesito que selecciones una opción válida.');
+                            return fallBack();
+                        }
+                }
+            } 
+            catch (error) {
+                console.error(`Error: ${error.message}`);
+            }
+        }
+    );
+
+const flowNoticia = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAction(async (_, { flowDynamic }) => {
+        try {
+            const servicio = await saludoInicial();
+            const fechaFormateada = formatearFecha(new Date(servicio[0].date));
+            await flowDynamic([
+                {
+                    body: `${servicio[0].title}\n${fechaFormateada}\n${servicio[0].link}`,
+                    media: servicio[0].featured_image
+                }
+            ])
+        } 
+        catch (error) {
+            console.log(error);
+        }
+    })
+    .addAnswer(
+        [
+            `Seleccione una opcion por favor:`,
+            '0️⃣. Volver inicio',
+        ],
+        { capture: true, idle: 300000 },
+        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+            try {
+                if (ctx?.idleFallBack) {
+                    return endFlow({
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                    });
+                }
+                const opcion = ctx.body;
+                switch (opcion) {
+                    case '0':
+                        return gotoFlow(inicioFlow);
                     default:
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
@@ -1484,6 +1523,7 @@ const main = async () => {
     const adapterFlow = createFlow([
         inicio,
         inicioFlow,
+        flowNoticia,
         flowReporte,
         tiempoEsperado,
         flowUbicacion,
