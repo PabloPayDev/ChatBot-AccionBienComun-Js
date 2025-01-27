@@ -463,6 +463,9 @@ const tiempoEsperado = addKeyword(EVENTS.ACTION, { sensitive: true, capture: tru
     );
 
 const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAction(async (ctx, { flowDynamic }) => {
         try {
             const message = [
@@ -530,6 +533,9 @@ const inicio = addKeyword(EVENTS.WELCOME, { sensitive: true })
     );
 
 const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Seleccione una opcion por favor:`,
@@ -580,13 +586,16 @@ const inicioFlow = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowNoticia = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAction(async (_, { flowDynamic }) => {
         try {
             const servicio = await saludoInicial();
             const fechaFormateada = formatearFecha(new Date(servicio[0].date));
             await flowDynamic([
                 {
-                    body: `${servicio[0].title}\n${fechaFormateada}\n${servicio[0].link}`,
+                    body: `${ servicio[0].title }\n${ fechaFormateada }\n${ servicio[0].link }`,
                     media: servicio[0].featured_image
                 }
             ])
@@ -596,8 +605,17 @@ const flowNoticia = addKeyword(EVENTS.ACTION, { sensitive: true })
         }
     })
     .addAnswer(
+        'procesando...',
+        null,
+        async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await flowDynamic([{ body: 'Seleccione una opcion por favor:' }]);
+            return gotoFlow(espera);
+        }
+    );
+    const espera = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer(
         [
-            `Seleccione una opcion por favor:`,
             '0️⃣. Volver inicio',
         ],
         { capture: true, idle: 300000 },
@@ -605,7 +623,7 @@ const flowNoticia = addKeyword(EVENTS.ACTION, { sensitive: true })
             try {
                 if (ctx?.idleFallBack) {
                     return endFlow({
-                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
+                        body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣.Regresar al Inicio.`
                     });
                 }
                 const opcion = ctx.body;
@@ -616,22 +634,25 @@ const flowNoticia = addKeyword(EVENTS.ACTION, { sensitive: true })
                         const intentos = await cantidadSolicitudes(ctx.from, opcion, '2');
                         if (intentos > 2) {
                             return endFlow({
-                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣. Regresar al Inicio.`
-                            });
-                        } 
+                                body: `¡Gracias, por utilizar nuestros servicios, vuelve a intentarlo más tarde! \n0️⃣.Regresar al Inicio.`
+                                });
+                        }
                         else {
                             await flowDynamic('Por favor necesito que selecciones una opción válida.');
                             return fallBack();
                         }
                 }
-            } 
+            }
             catch (error) {
-                console.error(`Error: ${error.message}`);
+                console.error(`Error: ${ error.message }`);
             }
         }
     );
 
 const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Seleccione una opcion por favor:`,
@@ -682,9 +703,13 @@ const flowSobrePrograma = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
-        `Por favor, ingresa tu Cédula de Identidad (C.I.) para continuar.`,
-        '0️⃣. Cancelar'
-    ],
+        '⏰. Espere un momento...',
+    ])
+    .addAnswer(
+        [
+            `Por favor, ingresa tu Cédula de Identidad (C.I.) para continuar.`,
+            '0️⃣. Cancelar'
+        ],
         { capture: true, idle: 300000 },
         async (ctx, { gotoFlow, fallBack, flowDynamic, endFlow }) => {
             try {
@@ -744,6 +769,9 @@ const flowBuscadorCIServicio = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
     .addAnswer([
+        '⏰. Espere un momento...',
+    ])
+    .addAnswer([
         `❌ No encontramos tu C.I. en nuestros registros.`,
         `¿Te gustaria registrarte?`,
         '1️⃣. Si, registrarme.',
@@ -788,6 +816,9 @@ const flowRegistro = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer([
         `Por favor, ingresa el departamento en el que fue expedido tu carnet de identidad.`,
         `Selecciona una de las opciones.`,
@@ -867,6 +898,9 @@ const flowExpedido = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Ingresa tu apellido paterno.`
@@ -902,6 +936,9 @@ const flowApellidoPaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Ingresa tu apellido materno.`
@@ -939,6 +976,9 @@ const flowApellidoMaterno = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Ingresa tus nombres.`
@@ -975,6 +1015,9 @@ const flowNombre = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 
 const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             `Ingresa tu correo electronico.`
@@ -1052,6 +1095,9 @@ const flowCorreo = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             '👍🏻¡Excelente elección! Por favor, escribe la acción de servicio que te gustaría proponer.'
@@ -1087,6 +1133,9 @@ const flowOtros = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             '📍¿Dónde te gustaría que realizáramos esta acción? \nDescribe la dirección del lugar con la mayor precisión posible (Ej: Zona, calle/avenida, al lado de, frente a). \n0️⃣. Regresar al Inicio.'
@@ -1129,6 +1178,9 @@ const flowUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
     
 
 const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             '📍 Para ayudarnos a identificar el lugar exacto, ¿podrías compartirnos la ubicación del lugar?',
@@ -1178,6 +1230,9 @@ const flowMenuUbicacion = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             'Por favor, Envie la ubicacion del lugar. \n0️⃣. Cancelar.'
@@ -1220,6 +1275,9 @@ const flowUbicacionGeoreferenciada = addKeyword(EVENTS.LOCATION, { sensitive: tr
     );
 
 const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             '📷 Ahora, si tienes alguna fotografía enviala para entender mejor la situacion.',
@@ -1278,6 +1336,9 @@ const flowFotos = addKeyword(EVENTS.ACTION, { sensitive: true })
     );
 
 const flowAdjuntos = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             'Por favor, suba una imagen o video para continuar.'
@@ -1386,6 +1447,9 @@ async function getResumen(ctx){
 }
 
 const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
+    .addAnswer([
+        '⏰. Espere un momento...',
+    ])
     .addAnswer(
         [
             '¿Estas de acuerdo con esta informacion?',
@@ -1495,9 +1559,9 @@ const flowResumen = addKeyword(EVENTS.ACTION, { sensitive: true })
 
 const flowReporte = addKeyword('GENER@REPORTE@741', { sensitive: true })
     .addAnswer([
-        'Procesando...',
-    ]).
-    addAction(async (_, { flowDynamic }) => {
+        '⏰. Espere un momento...',
+    ])
+    .addAction(async (_, { flowDynamic }) => {
         try {
             await exportarExcel();
             await flowDynamic([
